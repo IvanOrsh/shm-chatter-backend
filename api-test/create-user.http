@@ -1,0 +1,16 @@
+@baseUrl = http://localhost:3000/graphql
+
+# @name createUser
+POST {{baseUrl}}
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation {
+  createUser(createUserInput: {
+    email: "tester@example.com"
+    password: "sTrongPa$$word2007"
+  }) {
+    _id
+    email
+  }
+}

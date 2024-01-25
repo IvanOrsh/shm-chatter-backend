@@ -1,0 +1,11 @@
+@baseUrl = http://localhost:3000/graphql
+POST {{baseUrl}}
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+query {
+  users {
+    _id
+    email
+  }
+}

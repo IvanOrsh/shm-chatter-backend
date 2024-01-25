@@ -47,6 +47,9 @@ dependencies:
   migrate-mongo:
     specifier: ^11.0.0
     version: 11.0.0(mongodb@6.3.0)
+  mongodb:
+    specifier: ^6.3.0
+    version: 6.3.0
   mongoose:
     specifier: ^8.1.0
     version: 8.1.0

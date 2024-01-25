@@ -12,7 +12,7 @@ export class UsersService {
   async create(createUserInput: CreateUserInput) {
     return this.usersRepository.create({
       ...createUserInput,
-      password: await bcrypt.hash(createUserInput.password, 10),
+      password: await this.hashPassword(createUserInput.password),
     });
   }
 
@@ -24,11 +24,23 @@ export class UsersService {
     return this.usersRepository.findOne({ _id });
   }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
+  async update(_id: string, updateUserInput: UpdateUserInput) {
+    return this.usersRepository.findOneAndUpdate(
+      { _id },
+      {
+        $set: {
+          ...updateUserInput,
+          password: await this.hashPassword(updateUserInput.password),
+        },
+      },
+    );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(_id: string) {
+    return this.usersRepository.findOneAndDelete({ _id });
+  }
+
+  private async hashPassword(password: string) {
+    return bcrypt.hash(password, 10);
   }
 }

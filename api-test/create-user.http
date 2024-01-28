@@ -7,7 +7,7 @@ X-REQUEST-TYPE: GraphQL
 
 mutation {
   createUser(createUserInput: {
-    email: "tester@example.com"
+    email: "test@email.com"
     password: "sTrongPa$$word2007"
   }) {
     _id

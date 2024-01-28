@@ -1,0 +1,12 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+POST {{baseUrl}}/graphql
+Content-Type: {{contentType}}
+X-REQUEST-TYPE: GraphQL
+
+mutation {
+  removeUser {
+    _id
+  }
+}

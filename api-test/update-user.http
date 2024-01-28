@@ -7,7 +7,6 @@ X-REQUEST-TYPE: GraphQL
 
 mutation {
   updateUser(updateUserInput: {
-    _id: "65b2e97b90c482b272b218d0",
     email: "updated@example.com",
   }) {
     _id

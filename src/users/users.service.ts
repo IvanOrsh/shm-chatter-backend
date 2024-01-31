@@ -10,10 +10,16 @@ export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   async create(createUserInput: CreateUserInput) {
-    return this.usersRepository.create({
-      ...createUserInput,
-      password: await this.hashPassword(createUserInput.password),
-    });
+    try {
+      const res = await this.usersRepository.create({
+        ...createUserInput,
+        password: await this.hashPassword(createUserInput.password),
+      });
+      return res;
+    } catch (err) {
+      // duplicate email
+      throw new Error('Email already in use');
+    }
   }
 
   async findAll() {

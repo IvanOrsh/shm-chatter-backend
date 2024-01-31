@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 import { CreateUserInput } from './dto/create-user.input';
@@ -18,7 +22,10 @@ export class UsersService {
       return res;
     } catch (err) {
       // duplicate email
-      throw new Error('Email already in use');
+      if ((err.message as string).includes('E11000')) {
+        throw new UnprocessableEntityException('Email already in use');
+      }
+      throw err;
     }
   }
 

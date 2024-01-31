@@ -26,7 +26,7 @@ export class AuthService {
 
     const token = this.jwtService.sign(tokenPayload);
 
-    response.cookie('Authorization', token, {
+    response.cookie('Authentication', token, {
       httpOnly: true,
       expires,
       secure: process.env.NODE_ENV === 'production',

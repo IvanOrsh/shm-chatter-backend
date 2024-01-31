@@ -16,7 +16,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     try {
       return await this.usersService.verifyUser(email, password);
     } catch (err) {
-      throw new UnauthorizedException(err);
+      throw new UnauthorizedException("Credentials don't match");
     }
   }
 }

@@ -18,7 +18,7 @@ export class ChatsResolver {
     @Args('createChatInput') createChatInput: CreateChatInput,
     @CurrentUser() user: TokenPayload,
   ) {
-    return this.chatsService.create(createChatInput, user.id);
+    return this.chatsService.create(createChatInput, user._id);
   }
 
   @Query(() => [Chat], { name: 'chats' })

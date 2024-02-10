@@ -2,7 +2,7 @@ import { ArgsType, Field } from '@nestjs/graphql';
 import { IsNotEmpty } from 'class-validator';
 
 @ArgsType()
-export class GetMessagesArts {
+export class GetMessagesArgs {
   @Field()
   @IsNotEmpty()
   chatId: string;

@@ -10,7 +10,6 @@ import { CurrentUser } from 'src/auth/current-user.decorator';
 import { TokenPayload } from 'src/auth/token-payload.interface';
 import { GetMessagesArgs } from './dto/get-messages.args';
 import { PUB_SUB } from 'src/common/constants/injection-token';
-import { MESSAGE_CREATED } from './constants/pubsub-triggers';
 import { MessageCreatedArgs } from './dto/message-created.args';
 
 @Resolver(() => Message)
@@ -40,14 +39,21 @@ export class MessagesResolver {
 
   @Subscription(() => Message, {
     filter: (
-      payload: { messageCreated: Message },
-      variables: MessageCreatedArgs,
+      payload: { messageCreated: { chatId: string; userId: string } },
+      variables: { chatId: string },
+      context: { request: { user: { _id: string } } },
     ) => {
-      return payload.messageCreated.chatId === variables.chatId;
+      const userId = context.request.user._id;
+      return (
+        payload.messageCreated.chatId === variables.chatId &&
+        userId !== payload.messageCreated.userId
+      );
     },
   })
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  messageCreated(@Args() _messageCreatedArgs: MessageCreatedArgs) {
-    return this.pubSub.asyncIterator(MESSAGE_CREATED);
+  messageCreated(
+    @Args() messageCreatedArgs: MessageCreatedArgs,
+    @CurrentUser() user: TokenPayload,
+  ) {
+    return this.messagesService.messageCreated(messageCreatedArgs, user._id);
   }
 }

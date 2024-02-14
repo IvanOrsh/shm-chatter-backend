@@ -1,9 +1,10 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+
 import { ChatsService } from './chats.service';
 import { Chat } from './entities/chat.entity';
 import { CreateChatInput } from './dto/create-chat.input';
 import { UpdateChatInput } from './dto/update-chat.input';
-import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { TokenPayload } from 'src/auth/token-payload.interface';
@@ -21,9 +22,10 @@ export class ChatsResolver {
     return this.chatsService.create(createChatInput, user._id);
   }
 
+  @UseGuards(GqlAuthGuard)
   @Query(() => [Chat], { name: 'chats' })
-  findAll() {
-    return this.chatsService.findAll();
+  findAll(@CurrentUser() user: TokenPayload) {
+    return this.chatsService.findAll(user._id);
   }
 
   @Query(() => Chat, { name: 'chat' })

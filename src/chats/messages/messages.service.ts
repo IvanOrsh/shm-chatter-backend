@@ -9,6 +9,7 @@ import { GetMessagesArgs } from './dto/get-messages.args';
 import { PUB_SUB } from 'src/common/constants/injection-token';
 import { MESSAGE_CREATED } from './constants/pubsub-triggers';
 import { ChatsService } from '../chats.service';
+import { MessageCreatedArgs } from './dto/message-created.args';
 
 @Injectable()
 export class MessagesService {
@@ -58,7 +59,7 @@ export class MessagesService {
     ).messages;
   }
 
-  async messageCreated({ chatId }: MessageCreatedArg, userId: string) {
+  async messageCreated({ chatId }: MessageCreatedArgs, userId: string) {
     await this.chatsRepository.findOne({
       _id: chatId,
       ...this.chatsService.userChatFilter(userId),

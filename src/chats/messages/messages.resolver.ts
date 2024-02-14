@@ -41,9 +41,9 @@ export class MessagesResolver {
     filter: (
       payload: { messageCreated: { chatId: string; userId: string } },
       variables: { chatId: string },
-      context: { request: { user: { _id: string } } },
+      context: { req: { user: { _id: string } } },
     ) => {
-      const userId = context.request.user._id;
+      const userId = context.req.user._id;
       return (
         payload.messageCreated.chatId === variables.chatId &&
         userId !== payload.messageCreated.userId

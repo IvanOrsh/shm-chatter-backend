@@ -36,7 +36,7 @@ export class AuthService {
   verifyWs(request: Request): TokenPayload {
     const cookies: string[] = request.headers.cookie.split(';');
     const authCookie = cookies.find((cookie) =>
-      cookie.trim().startsWith('Authentication='),
+      cookie.includes('Authentication'),
     );
     const jwt = authCookie.split('Authentication=')[1];
     return this.jwtService.verify(jwt);

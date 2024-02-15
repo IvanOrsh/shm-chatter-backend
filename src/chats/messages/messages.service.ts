@@ -4,27 +4,29 @@ import { PubSub } from 'graphql-subscriptions';
 
 import { ChatsRepository } from '../chats.repository';
 import { CreateMessageInput } from './dto/create-message.input';
-import { Message } from './entities/message.entity';
 import { GetMessagesArgs } from './dto/get-messages.args';
 import { PUB_SUB } from 'src/common/constants/injection-token';
 import { MESSAGE_CREATED } from './constants/pubsub-triggers';
 import { ChatsService } from '../chats.service';
 import { MessageCreatedArgs } from './dto/message-created.args';
+import { MessageDocument } from './entities/message.document';
+import { Message } from './entities/message.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class MessagesService {
   constructor(
     private readonly chatsRepository: ChatsRepository,
     private readonly chatsService: ChatsService,
+    private readonly usersService: UsersService,
     @Inject(PUB_SUB) private readonly pubSub: PubSub,
   ) {}
 
   async createMessage(createMessageInput: CreateMessageInput, userId: string) {
     const { content, chatId } = createMessageInput;
-    const message: Message = {
+    const messageDocument: MessageDocument = {
       content,
-      userId,
-      chatId,
+      userId: new Types.ObjectId(userId),
       createdAt: new Date(),
       _id: new Types.ObjectId(),
     };
@@ -36,10 +38,16 @@ export class MessagesService {
       },
       {
         $push: {
-          messages: message,
+          messages: messageDocument,
         },
       },
     );
+
+    const message: Message = {
+      ...messageDocument,
+      chatId,
+      user: await this.usersService.findOne(userId),
+    };
 
     await this.pubSub.publish(MESSAGE_CREATED, {
       messageCreated: message,

@@ -1,7 +1,7 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 
 import { AbstractEntity } from 'src/common/database/abstract.entity';
-import { Message } from '../messages/entities/message.entity';
+import { MessageDocument } from '../messages/entities/message.document';
 
 @Schema()
 export class ChatDocument extends AbstractEntity {
@@ -11,8 +11,8 @@ export class ChatDocument extends AbstractEntity {
   @Prop()
   name: string;
 
-  @Prop([Message])
-  messages: Message[];
+  @Prop([MessageDocument])
+  messages: MessageDocument[];
 }
 
 export const ChatSchema = SchemaFactory.createForClass(ChatDocument);

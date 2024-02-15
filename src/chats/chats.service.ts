@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
 import { CreateChatInput } from './dto/create-chat.input';
-import { UpdateChatInput } from './dto/update-chat.input';
 import { ChatsRepository } from './chats.repository';
 
 @Injectable()
@@ -12,7 +11,6 @@ export class ChatsService {
     return this.chatsRepository.create({
       ...createChatInput,
       userId,
-      userIds: createChatInput.useIds || [],
       messages: [],
     });
   }
@@ -43,13 +41,5 @@ export class ChatsService {
         },
       ],
     };
-  }
-
-  update(id: number, updateChatInput: UpdateChatInput) {
-    return `This action updates a #${id} chat`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} chat`;
   }
 }

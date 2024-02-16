@@ -8,7 +8,6 @@ import { CreateMessageInput } from './dto/create-message.input';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { TokenPayload } from 'src/auth/token-payload.interface';
 import { GetMessagesArgs } from './dto/get-messages.args';
-
 import { MessageCreatedArgs } from './dto/message-created.args';
 
 @Resolver(() => Message)
@@ -31,16 +30,18 @@ export class MessagesResolver {
   }
 
   @Subscription(() => Message, {
-    filter: (payload, variables, context) => {
+    filter: (payload, variables: MessageCreatedArgs, context) => {
       const userId = context.req.user._id;
       const message: Message = payload.messageCreated;
       return (
-        message.chatId === variables.chatId &&
+        variables.chatIds.includes(message.chatId) &&
         userId !== message.user._id.toHexString()
       );
     },
   })
-  messageCreated(@Args() messageCreatedArgs: MessageCreatedArgs) {
-    return this.messagesService.messageCreated(messageCreatedArgs);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  messageCreated(@Args() _messageCreatedArgs: MessageCreatedArgs) {
+    // still need type for graphql introspection
+    return this.messagesService.messageCreated();
   }
 }

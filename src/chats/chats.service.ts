@@ -9,6 +9,10 @@ import { Chat } from './entities/chat.entity';
 export class ChatsService {
   constructor(private readonly chatsRepository: ChatsRepository) {}
 
+  async countChats() {
+    return this.chatsRepository.model.countDocuments({});
+  }
+
   async create(createChatInput: CreateChatInput, userId: string) {
     return this.chatsRepository.create({
       ...createChatInput,

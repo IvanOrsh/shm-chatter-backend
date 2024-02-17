@@ -52,8 +52,26 @@ export class MessagesService {
     return message;
   }
 
+  async countMessages(chatId: string) {
+    return (
+      await this.chatsRepository.model.aggregate([
+        {
+          $match: {
+            _id: new Types.ObjectId(chatId),
+          },
+        },
+        {
+          $unwind: '$messages', // we want to have a separate document for each message
+        },
+        {
+          $count: 'messages',
+        },
+      ])
+    )[0];
+  }
+
   async getMessages(getMessagesArgs: GetMessagesArgs): Promise<Message[]> {
-    const { chatId } = getMessagesArgs;
+    const { chatId, skip, limit } = getMessagesArgs;
 
     return this.chatsRepository.model.aggregate([
       {
@@ -69,6 +87,23 @@ export class MessagesService {
           newRoot: '$messages',
         },
       },
+
+      // pagination:
+      // 1. sort
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+      // 2. skip
+      {
+        $skip: skip,
+      },
+      // 3. limit
+      {
+        $limit: limit,
+      },
+
       {
         $lookup: {
           from: 'users',

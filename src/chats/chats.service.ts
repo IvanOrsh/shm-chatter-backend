@@ -4,6 +4,7 @@ import { PipelineStage, Types } from 'mongoose';
 import { CreateChatInput } from './dto/create-chat.input';
 import { ChatsRepository } from './chats.repository';
 import { Chat } from './entities/chat.entity';
+import { PaginationArgs } from 'src/common/dto/pagination-args.dto';
 
 @Injectable()
 export class ChatsService {
@@ -21,15 +22,37 @@ export class ChatsService {
     });
   }
 
-  async findMany(prePipelineStages: PipelineStage[] = []) {
+  async findMany(
+    prePipelineStages: PipelineStage[] = [],
+    paginationArgs: PaginationArgs,
+  ) {
     const chats = await this.chatsRepository.model.aggregate([
       ...prePipelineStages,
       {
         $set: {
           latestMessage: {
-            $arrayElemAt: ['$messages', -1],
+            $cond: [
+              'messages',
+              {
+                $arrayElemAt: ['$messages', -1],
+              },
+              {
+                createdAt: new Date(),
+              },
+            ],
           },
         },
+      },
+      {
+        $sort: {
+          'latestMessage.createdAt': -1,
+        },
+      },
+      {
+        $skip: paginationArgs.skip,
+      },
+      {
+        $limit: paginationArgs.limit,
       },
       {
         $unset: 'messages',
@@ -58,13 +81,19 @@ export class ChatsService {
   }
 
   async findOne(_id: string) {
-    const chats = await this.findMany([
-      {
-        $match: {
-          chatId: new Types.ObjectId(_id),
+    const chats = await this.findMany(
+      [
+        {
+          $match: {
+            chatId: new Types.ObjectId(_id),
+          },
         },
+      ],
+      {
+        skip: 0,
+        limit: 1,
       },
-    ]);
+    );
 
     if (!chats[0]) {
       throw new NotFoundException(`No chat was found with ID ${_id}`);
